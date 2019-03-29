@@ -3,9 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "aws-amplify": "^1.1.23",
+    "aws-amplify-react": "^2.3.3",
+    "aws-appsync": "^1.7.2",
+    "aws-appsync-react": "^1.2.7",
+    "glamor": "^2.20.40",
+    "graphql-tag": "^2.10.1",
     "react": "^16.8.6",
+    "react-apollo": "^2.5.3",
     "react-dom": "^16.8.6",
-    "react-scripts": "2.1.8"
+    "react-markdown": "^4.0.6",
+    "react-router-dom": "^5.0.0",
+    "react-scripts": "2.1.8",
+    "uuid": "^3.3.2"
   },
   "scripts": {
     "start": "react-scripts start",

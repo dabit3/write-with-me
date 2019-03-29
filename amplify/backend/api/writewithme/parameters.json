@@ -1,0 +1,4 @@
+{
+    "AppSyncApiName": "writewithme",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST"
+}

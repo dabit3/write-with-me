@@ -12,3 +12,46 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+p, span, input {
+  font-family: 'Oswald', sans-serif;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Francois One', sans-serif;
+}
+
+blockquote {
+  border-left: 4px solid black;
+  padding-left: 25px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 22px;
+}
+
+pre {
+  background-color: #ededed;
+  padding: 210px;
+}
+
+h1 {
+  margin-bottom: 5px;
+  font-size: 50px;
+}
+
+h2 {
+  font-size: 40px;
+  margin: 8px 0px 5px;
+}
+
+h3 {
+  font-size: 32px;
+}
+
+p {
+  font-size: 22px;
+}
+
+img {
+  max-width: 800px;
+}
