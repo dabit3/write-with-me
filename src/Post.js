@@ -1,23 +1,42 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { css } from 'glamor'
 import Container from './Container'
 import { Link } from 'react-router-dom'
+import { graphql, compose } from 'react-apollo'
+import { API, graphqlOperation } from 'aws-amplify'
+import { createPost, updatePost } from './graphql/mutations'
+import uuid from 'uuid/v4'
+
+const CLIENTID = uuid()
 
 const ReactMarkdown = require('react-markdown')
-const input = `# This is a header\n\nAnd this is a paragraph\n\n
-# This is a header\n\nAnd this is a paragraph
-# This is a header\n\nAnd this is a paragraph
-# This is a header\n\nAnd this is a paragraph
-# This is a header\n\nAnd this is a paragraph
-# This is a header\n\nAnd this is a paragraph
-# This is a header\n\nAnd this is a paragraph
-# This is a header\n\nAnd this is a paragraph
-`
+const input = `# This is a header\n\nAnd this is a paragraph\n\n`
 
-const Post = () => {
+async function createNewPost(post) {
+  try {
+    await API.graphql(graphqlOperation(createPost, { input: post }))
+  } catch (err) {
+    const data = err.errors[0].data
+    console.log({ data })
+  }
+}
+
+const Post = ({ match, updatePost }) => {
+  const { params: { name, id }} = match
   const [isEditing, updateIsEditing] = useState(false)
   const [md, updateMd] = useState(input)
-  const [title, updateTitle] = useState('Post title')
+  const [title, updateTitle] = useState(name)
+
+  useEffect(() => {
+    const post = {
+      clientId: CLIENTID,
+      id,
+      title: name,
+      markdown: input
+    }
+    console.log('post: ', post)
+    createNewPost(post)
+  }, [])
 
   function toggleMarkdown() {
     updateIsEditing(!isEditing)
@@ -28,11 +47,10 @@ const Post = () => {
   function updatePostTitle (e) { updateTitle(e.target.value) }
 
   return (
-    
     <Container>
       <div {...styles.header}>
         <Link to='/' {...styles.link}>
-          <p {...styles.heading}>✍️ Write with me</p>
+          <p {...styles.heading}><span role='img' aria-label='write'>✍️</span> Write with me</p>
         </Link>
       </div>
       <div {...styles.container}>
@@ -58,6 +76,26 @@ const Post = () => {
     </Container>
   )
 }
+
+const PostWithData = compose(
+  graphql(updatePost, {
+    props: props => {
+      return {
+        data: props.data,
+        createPost: post => {
+          props.mutate({
+            variables: { input: post},
+            optimisticResponse: () => ({
+              createPost: { ...post, __typename: 'Post' }
+            }),
+          })
+        }
+      }
+    }
+  })
+)(Post)
+
+export default Post;
 
 const styles = {
   header: css({
@@ -122,5 +160,3 @@ const styles = {
     margin: '0 auto',
   })
 }
-
-export default Post;

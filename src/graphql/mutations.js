@@ -1,8 +1,9 @@
 // eslint-disable
 // this is an auto generated file. This will be overwritten
+import gql from 'graphql-tag'
 
-export const createTodo = `mutation CreateTodo($input: CreateTodoInput!) {
-  createTodo(input: $input) {
+export const createPost = `mutation CreatePost($input: CreatePostInput!) {
+  createPost(input: $input) {
     id
     clientId
     markdown
@@ -11,8 +12,8 @@ export const createTodo = `mutation CreateTodo($input: CreateTodoInput!) {
   }
 }
 `;
-export const updateTodo = `mutation UpdateTodo($input: UpdateTodoInput!) {
-  updateTodo(input: $input) {
+export const updatePost = gql`mutation UpdatePost($input: UpdatePostInput!) {
+  updatePost(input: $input) {
     id
     clientId
     markdown
@@ -21,8 +22,8 @@ export const updateTodo = `mutation UpdateTodo($input: UpdateTodoInput!) {
   }
 }
 `;
-export const deleteTodo = `mutation DeleteTodo($input: DeleteTodoInput!) {
-  deleteTodo(input: $input) {
+export const deletePost = `mutation DeletePost($input: DeletePostInput!) {
+  deletePost(input: $input) {
     id
     clientId
     markdown

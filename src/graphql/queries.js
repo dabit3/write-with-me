@@ -1,8 +1,9 @@
 // eslint-disable
 // this is an auto generated file. This will be overwritten
+import gql from 'graphql-tag'
 
-export const getTodo = `query GetTodo($id: ID!) {
-  getTodo(id: $id) {
+export const getPost = `query GetPost($id: ID!) {
+  getPost(id: $id) {
     id
     clientId
     markdown
@@ -11,12 +12,8 @@ export const getTodo = `query GetTodo($id: ID!) {
   }
 }
 `;
-export const listTodos = `query ListTodos(
-  $filter: ModelTodoFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
+export const listPosts = gql`query ListPosts{
+  listPosts {
     items {
       id
       clientId

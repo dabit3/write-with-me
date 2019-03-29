@@ -1,4 +1,4 @@
-type Todo @model {
+type Post @model {
   id: ID!
   clientId: ID!
   markdown: String!

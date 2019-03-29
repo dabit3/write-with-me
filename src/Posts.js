@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import { css } from 'glamor'
 import { Link } from 'react-router-dom'
 import uuid from 'uuid/v4'
+import { listPosts } from './graphql/queries'
+import { graphql } from 'react-apollo'
 
-const Posts = (props) => {
+const Posts = ({ posts, ...props }) => {
   const [isOpen, toggleModal] = useState(false)
   const [input, updateInput] = useState('')
 
@@ -20,7 +22,7 @@ const Posts = (props) => {
   return (
     <div>
       <div {...styles.headingContainer}>
-        <h1 {...styles.heading}>✍️ Write with Me</h1>
+        <h1 {...styles.heading}><span role='img' aria-label='write'>✍️</span> Write with Me</h1>
         <div {...styles.buttonContainer}>
           <div {...styles.button} onClick={toggle}>
             <p {...styles.buttonText}>New Post</p>
@@ -30,9 +32,9 @@ const Posts = (props) => {
       <div {...styles.body}>
         <div {...styles.postList}>
           {
-            [1, 2, 3, 4, 4, 4, 4, 4, 4, 4,4 ,4,3 , 4, 4, 4].map((p, i) => (
-              <div>
-                <Link to='/post/23/23' {...styles.link}>
+            posts.map((p, i) => (
+              <div key={i}>
+                <Link to={`/post/${p.id}/${p.title}`} {...styles.link}>
                   <h1>View Post</h1>
                 </Link>
               </div>
@@ -53,6 +55,20 @@ const Posts = (props) => {
     </div>
   )
 }
+
+const PostsWithData = graphql(listPosts, {
+  options: {
+    fetchPolicy: 'cache-and-network'
+  },
+  props: props => {
+    return {
+      posts: props.data.listPosts ? props.data.listPosts.items : [],
+      data: props.data,
+    }
+  }
+})(Posts)
+
+export default PostsWithData
 
 const Modal = ({ onChange, input, navigate, toggle }) => (
   <div {...styles.modalContainer}>
@@ -157,5 +173,3 @@ const styles = {
     backgroundColor: '#ededed'
   })
 }
-
-export default Posts
