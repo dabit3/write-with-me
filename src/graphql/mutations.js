@@ -2,7 +2,7 @@
 // this is an auto generated file. This will be overwritten
 import gql from 'graphql-tag'
 
-export const createPost = `mutation CreatePost($input: CreatePostInput!) {
+export const createPost = gql`mutation CreatePost($input: CreatePostInput!) {
   createPost(input: $input) {
     id
     clientId

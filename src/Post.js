@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useReducer, useEffect } from 'react'
 import { css } from 'glamor'
 import Container from './Container'
 import { Link } from 'react-router-dom'
 import { graphql, compose } from 'react-apollo'
 import { API, graphqlOperation } from 'aws-amplify'
-import { createPost, updatePost } from './graphql/mutations'
+import { createPost, updatePost as UpdatePost } from './graphql/mutations'
+import { onUpdatePost } from './graphql/subscriptions'
+import { getPost } from './graphql/queries'
 import uuid from 'uuid/v4'
 
 const CLIENTID = uuid()
@@ -21,30 +23,86 @@ async function createNewPost(post) {
   }
 }
 
-const Post = ({ match, updatePost }) => {
-  const { params: { name, id }} = match
-  const [isEditing, updateIsEditing] = useState(false)
-  const [md, updateMd] = useState(input)
-  const [title, updateTitle] = useState(name)
+function reducer(state, action) {
+  switch (action.type) {
+    case 'updateMarkdown':
+      return {
+        ...state,
+        markdown: action.markdown
+      };
+    case 'updateTitle':
+      return {
+        ...state,
+        title: action.title
+      };
+      case 'updatePost':
+    return action.post
+    default:
+      throw new Error();
+  }
+}
 
-  useEffect(() => {
-    const post = {
-      clientId: CLIENTID,
-      id,
-      title: name,
-      markdown: input
-    }
-    console.log('post: ', post)
-    createNewPost(post)
-  }, [])
+const Post = ({ updatePost, post }) => {
+  const [postState, dispatch] = useReducer(reducer, post)
+  const [isEditing, updateIsEditing] = useState(false)
 
   function toggleMarkdown() {
     updateIsEditing(!isEditing)
   }
+  console.log('post title:', post.title)
 
-  function updateMarkdown(e) { updateMd(e.target.value) }
+  useEffect(() => {
+    dispatch({
+      type: 'updatePost',
+      post
+    })
+  }, [post.name, post.title])
 
-  function updatePostTitle (e) { updateTitle(e.target.value) }
+  function updateMarkdown(e) {
+    dispatch({
+      type: 'updateMarkdown',
+      markdown: e.target.value
+    })
+    const newPost = {
+      id: post.id,
+      markdown: e.target.value,
+      clientId: CLIENTID,
+      createdAt: post.createdAt,
+      title: post.title
+    }
+    updatePost(newPost)
+  }
+
+  function updatePostTitle (e) {
+    dispatch({
+      type: 'updateTitle',
+      title: e.target.value
+    })
+    const newPost = {
+      id: post.id,
+      title: e.target.value,
+      clientId: CLIENTID,
+      createdAt: post.createdAt,
+      markdown: post.markdown
+    }
+    updatePost(newPost)
+  }
+
+  useEffect(() => {
+    const subscriber = API.graphql(graphqlOperation(onUpdatePost, {
+      id: post.id
+    })).subscribe({
+      next: data => {
+        if (CLIENTID === data.value.data.onUpdatePost.clientId) return
+        const post = data.value.data.onUpdatePost
+        dispatch({
+          type: 'updatePost',
+          post
+        })
+      }
+    });
+    return () => subscriber.unsubscribe()
+  }, [])
 
   return (
     <Container>
@@ -60,17 +118,17 @@ const Post = ({ match, updatePost }) => {
               {isEditing ? 'Save' : 'Edit'}
             </p>
           </div>
-          { !isEditing && <h1 {...styles.postTitle}>{title}</h1>}
-          { !isEditing && <ReactMarkdown source={md} /> }
+          { !isEditing && <h1 {...styles.postTitle}>{postState.title}</h1>}
+          { !isEditing && <ReactMarkdown source={postState.markdown} /> }
           { isEditing && (
             <input
-              value={title}
+              value={postState.title}
               onChange={updatePostTitle}
               {...styles.input}
               placeholder='Post Title'
             />
           )}
-          { isEditing && <textarea {...styles.textarea} value={md} onChange={updateMarkdown} /> }
+          { isEditing && <textarea {...styles.textarea} value={postState.markdown} onChange={updateMarkdown} /> }
         </div>
       </div>
     </Container>
@@ -78,24 +136,62 @@ const Post = ({ match, updatePost }) => {
 }
 
 const PostWithData = compose(
-  graphql(updatePost, {
-    props: props => {
+  graphql(UpdatePost, {
+    props: props => ({
+      updatePost: (post) => {
+        console.log('post:', post)
+        props.mutate({
+          variables: { input: post },
+          optimisticResponse: () => ({
+            updatePost: { ...post, __typename: 'Post' }
+          }),
+        })
+      }
+    })
+  }),
+  graphql(getPost, {
+    options: props => {
       return {
-        data: props.data,
-        createPost: post => {
-          props.mutate({
-            variables: { input: post},
-            optimisticResponse: () => ({
-              createPost: { ...post, __typename: 'Post' }
-            }),
+        variables: {
+          id: props.match.params.id
+        },
+        fetchPolicy: 'cache-and-network'
+      }
+    },
+    props: props => {
+      console.log('props:', props)
+      if (props.data.getPost) {
+        return {
+          post: props.data.getPost
+        }
+      } else {
+        const { id, name } = props.ownProps.match.params
+        const post = {
+          clientId: CLIENTID,
+          id,
+          title: name,
+          markdown: input
+        }
+
+        API.graphql(graphqlOperation(createPost, { input: post }))
+          .then(data => {
+            console.log('post created successfully: ', data)
           })
+          .catch(err => {
+            if (err.errors[0].errorType !== "DynamoDB:ConditionalCheckFailedException") {
+              console.log('error creating post: ', err)
+            }
+          })
+
+        return {
+          post
         }
       }
     }
   })
 )(Post)
 
-export default Post;
+export default PostWithData;
 
 const styles = {
   header: css({

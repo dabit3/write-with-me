@@ -35,7 +35,7 @@ const Posts = ({ posts, ...props }) => {
             posts.map((p, i) => (
               <div key={i}>
                 <Link to={`/post/${p.id}/${p.title}`} {...styles.link}>
-                  <h1>View Post</h1>
+                  <h1>{p.title}</h1>
                 </Link>
               </div>
             ))
