@@ -1,11 +1,9 @@
 import React, { useState, useReducer, useEffect } from 'react'
 import { css } from 'glamor'
 import { Link } from 'react-router-dom'
-import { graphql, compose } from 'react-apollo'
 import { API, graphqlOperation } from 'aws-amplify'
 import { createPost, updatePost as UpdatePost } from './graphql/mutations'
 import { onUpdatePost } from './graphql/subscriptions'
-import { getPost } from './graphql/queries'
 import uuid from 'uuid/v4'
 import useDebounce from './useDebounce'
 import Container from './Container'
@@ -36,52 +34,89 @@ function reducer(state, action) {
   }
 }
 
-const Post = ({ updatePost, post }) => {
+async function createNewPost(post, dispatch) {
+  try {
+    const postData = await API.graphql(graphqlOperation(createPost, { input: post }))
+    dispatch({
+      type: 'updatePost',
+      post: {
+        ...postData.data.createPost,
+        clientId: CLIENTID
+      }
+    })
+  } catch(err) {
+    if (err.errors[0].errorType === "DynamoDB:ConditionalCheckFailedException") {
+      const existingPost = err.errors[0].data
+      dispatch({
+        type: 'updatePost',
+        post: {
+          ...existingPost,
+          clientId: CLIENTID
+        }
+      })
+    }    
+  }
+}
+
+async function updatePost(post) {
+  try {
+    await API.graphql(graphqlOperation(UpdatePost, { input: post }))
+    console.log('post has been updated!')
+  } catch (err) {
+    console.log('error:' , err)
+  }
+}
+
+const Post = ({ match: { params } }) => {
+  const post = {
+    id: params.id,
+    title: params.title,
+    clientId: CLIENTID,
+    markdown: '# Loading...'
+  }
   const [postState, dispatch] = useReducer(reducer, post)
   const [isEditing, updateIsEditing] = useState(false)
-  const debouncedMarkdown = useDebounce(postState.markdown, 500)
-  const debouncedTitle = useDebounce(postState.title, 500);
   
   function toggleMarkdown() {
     updateIsEditing(!isEditing)
   }
 
   useEffect(() => {
-    dispatch({
-      type: 'updatePost',
-      post
-    })
-  }, [post.title])
+    const post = {
+      ...postState,
+      markdown: input
+    }
+    createNewPost(post, dispatch)
+  }, [])
 
   function updateMarkdown(e) {
     dispatch({
       type: 'updateMarkdown',
       markdown: e.target.value,
     })
+    const newPost = {
+      id: post.id,
+      markdown: e.target.value,
+      clientId: CLIENTID,
+      createdAt: post.createdAt,
+      title: postState.title
+    }
+    updatePost(newPost, dispatch)
   }
-
-  useEffect(
-    () => {
-      if (debouncedMarkdown && CLIENTID === postState.clientId) {
-        const newPost = {
-          id: post.id,
-          markdown: postState.markdown,
-          clientId: CLIENTID,
-          createdAt: post.createdAt,
-          title: postState.title
-        }
-        updatePost(newPost)
-      }
-    },
-    [debouncedMarkdown, debouncedTitle]
-  )
-
 
   function updatePostTitle (e) {
     dispatch({
       type: 'updateTitle',
       title: e.target.value
     })
+    const newPost = {
+      id: post.id,
+      markdown: postState.markdown,
+      clientId: CLIENTID,
+      createdAt: post.createdAt,
+      title: e.target.value
+    }
+    updatePost(newPost, dispatch)
   }
 
   useEffect(() => {
@@ -131,62 +166,7 @@ const Post = ({ updatePost, post }) => {
   )
 }
 
-const PostWithData = compose(
-  graphql(UpdatePost, {
-    props: props => ({
-      updatePost: (post) => {
-        props.mutate({
-          variables: { input: post },
-          optimisticResponse: () => ({
-            updatePost: { ...post, __typename: 'Post' }
-          }),
-        })
-      }
-    })
-  }),
-  graphql(getPost, {
-    options: props => {
-      return {
-        variables: {
-          id: props.match.params.id
-        },
-        fetchPolicy: 'cache-and-network'
-      }
-    },
-    props: props => {
-      console.log('props:', props)
-      if (props.data.getPost) {
-        return {
-          post: props.data.getPost
-        }
-      } else {
-        const { id, title } = props.ownProps.match.params
-        const post = {
-          clientId: CLIENTID,
-          id,
-          title,
-          markdown: input
-        }
-
-        API.graphql(graphqlOperation(createPost, { input: post }))
-          .then(data => {
-            console.log('post created successfully: ', data)
-          })
-          .catch(err => {
-            if (err.errors[0].errorType !== "DynamoDB:ConditionalCheckFailedException") {
-              console.log('error creating post: ', err)
-            }
-          })
-
-        return {
-          post
-        }
-      }
-    }
-  })
-)(Post)
-
-export default PostWithData;
+export default Post;
 
 const styles = {
   header: css({

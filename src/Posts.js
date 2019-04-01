@@ -25,7 +25,7 @@ const Posts = ({ posts, ...props }) => {
     props.data.subscribeToMore(
       buildSubscription(onCreatePost, listPosts)
     )
-  })
+  }, [])
 
   return (
     <div>
