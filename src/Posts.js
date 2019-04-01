@@ -30,7 +30,14 @@ const Posts = ({ posts, ...props }) => {
   return (
     <div>
       <div {...styles.headingContainer}>
-        <h1 {...styles.heading}><span role='img' aria-label='write'>✍️</span> Write with Me</h1>
+        <div>
+          <h1 {...styles.heading}><span role='img' aria-label='write'>✍️</span> Write with Me</h1>
+          <div {...styles.taglineContainer}>
+            <span
+              {...styles.tagLineText}
+            >Real-time collaborative blogging platform.</span>
+          </div>
+        </div>
         <div {...styles.buttonContainer}>
           <div {...styles.button} onClick={toggle}>
             <p {...styles.buttonText}>New Post</p>
@@ -120,6 +127,18 @@ const styles = {
     '@media(max-width: 640px)': {
       fontSize: 30
     }
+  }),
+  taglineContainer: css({
+    marginLeft: 65,
+    paddingRight: 20,
+    marginTop: -10,
+    '@media(max-width: 640px)': {
+      marginLeft: 37,
+      marginTop: -3,
+    }
+  }),
+  tagLineText: css({
+    color: 'white'
   }),
   headingContainer: css({
     height: 130,
