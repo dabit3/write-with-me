@@ -198,7 +198,11 @@ const styles = {
     boxShadow: '1px 1px 12px rgba(0, 0, 0, .15)',
     zIndex: 1000,
     padding: 20,
-    borderRadius: 3
+    borderRadius: 3,
+    '@media(max-width: 740px)': {
+      width: '250px',
+      marginLeft: '-150px',
+    }
   }),
   input: css({
     height: 50,
@@ -207,7 +211,10 @@ const styles = {
     outline: 'none',
     border: 'none',
     borderBottom: '3px solid #66e2d5',
-    marginBottom: 15
+    marginBottom: 15,
+    '@media(max-width: 740px)': {
+      width: '225px',
+    }
   }),
   modalButton: css({
     backgroundColor: '#66e2d5',
