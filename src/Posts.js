@@ -179,6 +179,8 @@ const styles = {
   }),
   postTitle: css({
     marginTop: 10,
+    borderBottom: '3px solid #66e2d5',
+    paddingBottom: '3px',
     ':hover': {
       opacity: 0.7
     },
