@@ -227,7 +227,11 @@ const styles = {
     marginTop: 30,
     marginBottom: 8,
     color: 'rgba(0, 0, 0, .35)',
-    width: '900px'
+    width: '900px',
+    '@media(max-width: 940px)': {
+      width: 'calc(100% - 40px)',
+      padding: '20px 20px 20px 0px'
+    }
   }),
   textarea: css({
     width: 900,
@@ -235,7 +239,11 @@ const styles = {
     border: '3px solid black',
     minHeight: 'calc(100vh - 350px)',
     outline: 'none',
-    fontSize: 18
+    fontSize: 18,
+    '@media(max-width: 940px)': {
+      width: 'calc(100% - 40px)',
+      padding: '20px 20px'
+    }
   }),
   postTitle: css({
     fontFamily: "ZCOOL XiaoWei, serif",
@@ -249,5 +257,9 @@ const styles = {
     padding: '50px 0px 0px',
     width: '900px',
     margin: '0 auto',
+    '@media(max-width: 940px)': {
+      width: 'calc(100% - 40px)',
+      padding: '20px 20px'
+    }
   })
 }

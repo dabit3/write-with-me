@@ -43,7 +43,7 @@ const Posts = ({ posts, ...props }) => {
             posts.map((p, i) => (
               <div key={i}>
                 <Link to={`/post/${p.id}/${p.title}`} {...styles.link}>
-                  <h1>{p.title}</h1>
+                  <h1 {...styles.postTitle}>{p.title}</h1>
                 </Link>
               </div>
             ))
@@ -99,7 +99,10 @@ const Modal = ({ onChange, input, navigate, toggle }) => (
 const styles = {
   heading: css({
     color: 'white', 
-    margin: 0
+    margin: 0,
+    '@media(max-width: 640px)': {
+      fontSize: 30
+    }
   }),
   headingContainer: css({
     height: 130,
@@ -118,12 +121,20 @@ const styles = {
     backgroundColor: '#66e2d5',
     marginRight: 90,
     borderRadius: 3,
-    cursor: 'pointer'
+    cursor: 'pointer',
+    minWidth: 56,
+    '@media(max-width: 640px)': {
+      marginRight: 20,
+      padding: '4px 20px'
+    }
   }),
   buttonText: css({
     fontSize: 20,
     marginTop: -2,
-    marginBottom: 0
+    marginBottom: 0,
+    '@media(max-width: 640px)': {
+      fontSize: 16
+    }
   }),
   body: css({
     height: 'calc(100vh - 160px)',
@@ -135,6 +146,16 @@ const styles = {
     width: '900px',
     margin: '0 auto',
     padding: '0px 0px 20px',
+    '@media(max-width: 940px)': {
+      width: 'calc(100% - 40px)',
+      padding: '20px'
+    }
+  }),
+  postTitle: css({
+    '@media(max-width: 640px)': {
+      fontSize: 32,
+      marginTop: 5
+    }
   }),
   link: css({
     textDecoration: 'none',
