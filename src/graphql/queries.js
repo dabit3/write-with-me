@@ -16,8 +16,7 @@ export const listPosts = gql`query ListPosts{
   listPosts {
     items {
       id
-      clientId
-      markdown
+      clientId      
       title
       createdAt
     }

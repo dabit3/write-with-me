@@ -140,7 +140,11 @@ const styles = {
     height: 'calc(100vh - 160px)',
     width: 'calc(100vw - 30px)',
     border: '15px solid #66e2d5',
+    padding: '25px 0px',
     overflowY: 'scroll',
+    '@media(max-width: 640px)': {
+      paddingTop: 0
+    }
   }),
   postList: css({
     width: '900px',
@@ -148,10 +152,11 @@ const styles = {
     padding: '0px 0px 20px',
     '@media(max-width: 940px)': {
       width: 'calc(100% - 40px)',
-      padding: '20px'
+      padding: '10px 20px'
     }
   }),
   postTitle: css({
+    marginTop: 10,
     '@media(max-width: 640px)': {
       fontSize: 32,
       marginTop: 5
