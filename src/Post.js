@@ -146,7 +146,7 @@ const Post = ({ match: { params } }) => {
         <div {...styles.body}>
           <div {...styles.toggleButton}>
             <p {...styles.fancy} {...styles.toggleButtonText} onClick={toggleMarkdown}>
-              {isEditing ? 'Save' : 'Edit'}
+              {isEditing ? 'Done' : 'Edit'}
             </p>
           </div>
           { !isEditing && <h1 {...styles.postTitle}>{postState.title}</h1>}
