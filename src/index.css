@@ -31,7 +31,7 @@ blockquote {
 
 pre {
   background-color: #ededed;
-  padding: 210px;
+  padding: 20px;
 }
 
 h1 {
@@ -54,4 +54,10 @@ p {
 
 img {
   max-width: 800px;
+}
+
+@media(max-width: 900px) {
+  img {
+    width: 100%;
+  }
 }
