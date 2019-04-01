@@ -1,7 +1,8 @@
 // eslint-disable
 // this is an auto generated file. This will be overwritten
+import gql from 'graphql-tag'
 
-export const onCreatePost = `subscription OnCreatePost {
+export const onCreatePost = gql`subscription OnCreatePost {
   onCreatePost {
     id
     clientId

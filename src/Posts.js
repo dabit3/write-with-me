@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { css } from 'glamor'
 import { Link } from 'react-router-dom'
 import uuid from 'uuid/v4'
 import { listPosts } from './graphql/queries'
+import { onCreatePost } from './graphql/subscriptions'
+import { buildSubscription } from 'aws-appsync'
 import { graphql } from 'react-apollo'
 
 const Posts = ({ posts, ...props }) => {
@@ -18,6 +20,12 @@ const Posts = ({ posts, ...props }) => {
     const url = `/post/${id}/${input}`
     props.history.push(url)
   }
+
+  useEffect(() => {
+    props.data.subscribeToMore(
+      buildSubscription(onCreatePost, listPosts)
+    )
+  })
 
   return (
     <div>

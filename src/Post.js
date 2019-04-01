@@ -1,6 +1,5 @@
 import React, { useState, useReducer, useEffect } from 'react'
 import { css } from 'glamor'
-import Container from './Container'
 import { Link } from 'react-router-dom'
 import { graphql, compose } from 'react-apollo'
 import { API, graphqlOperation } from 'aws-amplify'
@@ -8,32 +7,27 @@ import { createPost, updatePost as UpdatePost } from './graphql/mutations'
 import { onUpdatePost } from './graphql/subscriptions'
 import { getPost } from './graphql/queries'
 import uuid from 'uuid/v4'
+import useDebounce from './useDebounce'
+import Container from './Container'
 
 const CLIENTID = uuid()
 
 const ReactMarkdown = require('react-markdown')
 const input = `# This is a header\n\nAnd this is a paragraph\n\n`
 
-async function createNewPost(post) {
-  try {
-    await API.graphql(graphqlOperation(createPost, { input: post }))
-  } catch (err) {
-    const data = err.errors[0].data
-    console.log({ data })
-  }
-}
-
 function reducer(state, action) {
   switch (action.type) {
     case 'updateMarkdown':
       return {
         ...state,
-        markdown: action.markdown
+        markdown: action.markdown,
+        clientId: CLIENTID
       };
     case 'updateTitle':
       return {
         ...state,
-        title: action.title
+        title: action.title,
+        clientId: CLIENTID
       };
       case 'updatePost':
     return action.post
@@ -45,47 +39,49 @@ function reducer(state, action) {
 const Post = ({ updatePost, post }) => {
   const [postState, dispatch] = useReducer(reducer, post)
   const [isEditing, updateIsEditing] = useState(false)
-
+  const debouncedMarkdown = useDebounce(postState.markdown, 500)
+  const debouncedTitle = useDebounce(postState.title, 500);
+  
   function toggleMarkdown() {
     updateIsEditing(!isEditing)
   }
-  console.log('post title:', post.title)
 
   useEffect(() => {
     dispatch({
       type: 'updatePost',
       post
     })
-  }, [post.name, post.title])
+  }, [post.title])
 
   function updateMarkdown(e) {
     dispatch({
       type: 'updateMarkdown',
-      markdown: e.target.value
-    })
-    const newPost = {
-      id: post.id,
       markdown: e.target.value,
-      clientId: CLIENTID,
-      createdAt: post.createdAt,
-      title: post.title
-    }
-    updatePost(newPost)
+    })
   }
+
+  useEffect(
+    () => {
+      if (debouncedMarkdown && CLIENTID === postState.clientId) {
+        const newPost = {
+          id: post.id,
+          markdown: postState.markdown,
+          clientId: CLIENTID,
+          createdAt: post.createdAt,
+          title: postState.title
+        }
+        updatePost(newPost)
+      }
+    },
+    [debouncedMarkdown, debouncedTitle]
+  )
+
 
   function updatePostTitle (e) {
     dispatch({
       type: 'updateTitle',
       title: e.target.value
     })
-    const newPost = {
-      id: post.id,
-      title: e.target.value,
-      clientId: CLIENTID,
-      createdAt: post.createdAt,
-      markdown: post.markdown
-    }
-    updatePost(newPost)
   }
 
   useEffect(() => {
@@ -94,10 +90,10 @@ const Post = ({ updatePost, post }) => {
     })).subscribe({
       next: data => {
         if (CLIENTID === data.value.data.onUpdatePost.clientId) return
-        const post = data.value.data.onUpdatePost
+        const postFromSub = data.value.data.onUpdatePost
         dispatch({
           type: 'updatePost',
-          post
+          post: postFromSub
         })
       }
     });
@@ -139,7 +135,6 @@ const PostWithData = compose(
   graphql(UpdatePost, {
     props: props => ({
       updatePost: (post) => {
-        console.log('post:', post)
         props.mutate({
           variables: { input: post },
           optimisticResponse: () => ({
@@ -165,11 +160,11 @@ const PostWithData = compose(
           post: props.data.getPost
         }
       } else {
-        const { id, name } = props.ownProps.match.params
+        const { id, title } = props.ownProps.match.params
         const post = {
           clientId: CLIENTID,
           id,
-          title: name,
+          title,
           markdown: input
         }
 

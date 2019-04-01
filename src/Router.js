@@ -10,7 +10,7 @@ function Main() {
       <div>
         <Switch>
           <Route exact path="/" component={Posts} />
-          <Route path="/post/:id/:name?" component={Post} />
+          <Route path="/post/:id/:title?" component={Post} />
         </Switch>
       </div>
     </Router>
