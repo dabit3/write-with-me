@@ -60,6 +60,16 @@ const Posts = ({ posts, ...props }) => {
           />
         )
       }
+      <div {...styles.footer}>
+        <p {...styles.footerText}>
+        Built with &nbsp;
+        <a href="https://aws-amplify.github.io/" {...styles.footerLink}>AWS Amplify</a>
+        &nbsp; &amp; &nbsp;
+        <a href="https://aws.amazon.com/appsync/" {...styles.footerLink}>AWS AppSync</a>. Deployed with the
+        <a href="https://aws.amazon.com/amplify/console/" {...styles.footerLink}>&nbsp;Amplify Console</a>
+         .
+        </p>
+      </div>
     </div>
   )
 }
@@ -91,7 +101,8 @@ const Modal = ({ onChange, input, navigate, toggle }) => (
       <p {...styles.modalButtonText}>Create Post</p>
     </div>
     <div onClick={toggle} {...styles.modalButton} {...styles.cancelButton}>
-      <p {...styles.modalButtonText}>Cancel</p>
+      <p
+        {...styles.modalButtonText}>Cancel</p>
     </div>
   </div>
 )
@@ -137,19 +148,24 @@ const styles = {
     }
   }),
   body: css({
-    height: 'calc(100vh - 160px)',
+    height: 'calc(100vh - 210px)',
     width: 'calc(100vw - 30px)',
     border: '15px solid #66e2d5',
     padding: '25px 0px',
     overflowY: 'scroll',
     '@media(max-width: 640px)': {
-      paddingTop: 0
+      paddingTop: 0,
+      height: 'calc(100vh - 185px)',
     }
   }),
   postList: css({
     width: '900px',
     margin: '0 auto',
     padding: '0px 0px 20px',
+    '@media(max-width: 500px)': {
+      height: 'calc(100% - 60px)',
+      overflowY: 'scroll'
+    },
     '@media(max-width: 940px)': {
       width: 'calc(100% - 40px)',
       padding: '10px 20px'
@@ -157,6 +173,9 @@ const styles = {
   }),
   postTitle: css({
     marginTop: 10,
+    ':hover': {
+      opacity: 0.7
+    },
     '@media(max-width: 640px)': {
       fontSize: 32,
       marginTop: 5
@@ -205,5 +224,18 @@ const styles = {
   }),
   cancelButton: css({
     backgroundColor: '#ededed'
+  }),
+  footer: css({
+    position: 'fixed', bottom: 10, right: 30,
+    '@media(max-width: 500px)': {
+      width: 'calc(100% - 60px)',
+    }
+  }),
+  footerText: css({
+    fontSize: 16
+  }),
+  footerLink: css({
+    textDecoration: 'none',
+    color: '#00ceb8'
   })
 }
