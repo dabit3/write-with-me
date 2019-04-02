@@ -1,15 +1,49 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import { css } from 'glamor'
 import { Link } from 'react-router-dom'
 import uuid from 'uuid/v4'
 import { listPosts } from './graphql/queries'
 import { onCreatePost } from './graphql/subscriptions'
-import { buildSubscription } from 'aws-appsync'
-import { graphql } from 'react-apollo'
+import { API, graphqlOperation } from 'aws-amplify'
 
-const Posts = ({ posts, ...props }) => {
+async function fetchPosts(dispatch) {
+  try {
+    const postData = await API.graphql(graphqlOperation(listPosts))
+    dispatch({
+      type: 'fetchPostsSuccess',
+      posts: postData.data.listPosts.items
+    })
+  } catch (err) {
+    console.log('error fetching posts...: ', err)
+  }
+}
+
+const initialState = {
+  posts: []
+}
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'fetchPostsSuccess':
+      return {
+        posts: action.posts
+      }
+    case 'addPostFromSubscription':
+      return {
+        posts: [
+          action.post,
+          ...state.posts
+        ]
+      }
+    default:
+      throw new Error();
+  }
+}
+
+const Posts = (props) => {
   const [isOpen, toggleModal] = useState(false)
   const [input, updateInput] = useState('')
+  const [postsState, dispatch] = useReducer(reducer, initialState)
 
   function toggle() { toggleModal(!isOpen) }
   function onChange(e) { updateInput(e.target.value) }
@@ -22,10 +56,21 @@ const Posts = ({ posts, ...props }) => {
   }
 
   useEffect(() => {
-    props.data.subscribeToMore(
-      buildSubscription(onCreatePost, listPosts)
-    )
-  })
+    fetchPosts(dispatch)
+  }, [])
+
+  useEffect(() => {
+    const subscriber = API.graphql(graphqlOperation(onCreatePost)).subscribe({
+      next: data => {
+        const postFromSub = data.value.data.onCreatePost
+        dispatch({
+          type: 'addPostFromSubscription',
+          post: postFromSub
+        })
+      }
+    });
+    return () => subscriber.unsubscribe()
+  }, [])
 
   return (
     <div>
@@ -47,7 +92,7 @@ const Posts = ({ posts, ...props }) => {
       <div {...styles.body}>
         <div {...styles.postList}>
           {
-            posts.map((p, i) => (
+            postsState.posts.map((p, i) => (
               <div key={i}>
                 <Link to={`/post/${p.id}/${p.title}`} {...styles.link}>
                   <h1 {...styles.postTitle}>{p.title}</h1>
@@ -87,19 +132,7 @@ const Posts = ({ posts, ...props }) => {
   )
 }
 
-const PostsWithData = graphql(listPosts, {
-  options: {
-    fetchPolicy: 'cache-and-network'
-  },
-  props: props => {
-    return {
-      posts: props.data.listPosts ? props.data.listPosts.items : [],
-      data: props.data,
-    }
-  }
-})(Posts)
-
-export default PostsWithData
+export default Posts
 
 const Modal = ({ onChange, input, navigate, toggle }) => (
   <div {...styles.modalContainer}>

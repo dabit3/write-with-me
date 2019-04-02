@@ -12,7 +12,7 @@ export const getPost = gql`query GetPost($id: ID!) {
   }
 }
 `;
-export const listPosts = gql`query ListPosts{
+export const listPosts = `query ListPosts{
   listPosts(limit: 500) {
     items {
       id
