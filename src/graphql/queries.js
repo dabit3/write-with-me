@@ -13,14 +13,13 @@ export const getPost = gql`query GetPost($id: ID!) {
 }
 `;
 export const listPosts = gql`query ListPosts{
-  listPosts {
+  listPosts(limit: 500) {
     items {
       id
       clientId      
       title
       createdAt
     }
-    nextToken
   }
 }
 `;
