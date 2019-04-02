@@ -101,6 +101,22 @@ const Posts = (props) => {
             ))
           }
         </div>
+        <div {...styles.footer}>
+          <p {...styles.footerText}>
+          Built with &nbsp;
+          <a
+          target="_blank"
+          href="https://aws-amplify.github.io/" {...styles.footerLink}>AWS Amplify</a>
+          &nbsp; &amp; &nbsp;
+          <a
+          target="_blank"
+          href="https://aws.amazon.com/appsync/" {...styles.footerLink}>AWS AppSync</a>. Deployed with the
+          <a
+          target="_blank"
+          href="https://aws.amazon.com/amplify/console/" {...styles.footerLink}>&nbsp;Amplify Console</a>
+          .
+          </p>
+        </div>
       </div>
       {
         isOpen && (
@@ -112,22 +128,7 @@ const Posts = (props) => {
           />
         )
       }
-      <div {...styles.footer}>
-        <p {...styles.footerText}>
-        Built with &nbsp;
-        <a
-        target="_blank"
-        href="https://aws-amplify.github.io/" {...styles.footerLink}>AWS Amplify</a>
-        &nbsp; &amp; &nbsp;
-        <a
-        target="_blank"
-        href="https://aws.amazon.com/appsync/" {...styles.footerLink}>AWS AppSync</a>. Deployed with the
-        <a
-        target="_blank"
-        href="https://aws.amazon.com/amplify/console/" {...styles.footerLink}>&nbsp;Amplify Console</a>
-         .
-        </p>
-      </div>
+      
     </div>
   )
 }
@@ -206,24 +207,20 @@ const styles = {
     }
   }),
   body: css({
-    height: 'calc(100vh - 210px)',
     width: 'calc(100vw - 30px)',
     border: '15px solid #66e2d5',
     padding: '25px 0px',
     overflowY: 'scroll',
     '@media(max-width: 640px)': {
       paddingTop: 0,
-      height: 'calc(100vh - 185px)',
+      overflowY: 'none'
     }
   }),
   postList: css({
     width: '900px',
     margin: '0 auto',
     padding: '0px 0px 20px',
-    '@media(max-width: 500px)': {
-      height: 'calc(100% - 60px)',
-      overflowY: 'scroll'
-    },
+    
     '@media(max-width: 940px)': {
       width: 'calc(100% - 40px)',
       padding: '10px 20px'
@@ -293,10 +290,7 @@ const styles = {
     backgroundColor: '#ededed'
   }),
   footer: css({
-    position: 'fixed', bottom: 10, right: 30,
-    '@media(max-width: 500px)': {
-      width: 'calc(100% - 60px)',
-    }
+    padding: '10px 20px'
   }),
   footerText: css({
     fontSize: 16
