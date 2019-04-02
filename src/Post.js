@@ -5,7 +5,6 @@ import { API, graphqlOperation } from 'aws-amplify'
 import { createPost, updatePost as UpdatePost } from './graphql/mutations'
 import { onUpdatePost } from './graphql/subscriptions'
 import uuid from 'uuid/v4'
-import useDebounce from './useDebounce'
 import Container from './Container'
 
 const CLIENTID = uuid()
