@@ -227,7 +227,10 @@ const styles = {
   }),
   postTitle: css({
     fontFamily: "ZCOOL XiaoWei, serif",
-    fontSize: 66
+    fontSize: 66,
+    '@media(max-width: 650px)': {
+      fontSize: 50
+    }
   }),
   container: css({
     overflowY: 'scroll',

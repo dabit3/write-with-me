@@ -15,18 +15,24 @@ async function fetchPosts(dispatch) {
     })
   } catch (err) {
     console.log('error fetching posts...: ', err)
+    dispatch({
+      type: 'fetchPostsError',
+    })
   }
 }
 
 const initialState = {
-  posts: []
+  posts: [],
+  loading: true,
+  error: false
 }
 
 function reducer(state, action) {
   switch (action.type) {
     case 'fetchPostsSuccess':
       return {
-        posts: action.posts
+        posts: action.posts,
+        loading: false
       }
     case 'addPostFromSubscription':
       return {
@@ -34,6 +40,12 @@ function reducer(state, action) {
           action.post,
           ...state.posts
         ]
+      }
+    case 'fetchPostsError':
+      return {
+        ...state,
+        loading: false,
+        error: true
       }
     default:
       throw new Error();
@@ -90,6 +102,13 @@ const Posts = (props) => {
         </div>
       </div>
       <div {...styles.body}>
+        {
+          postsState.loading && (
+            <div {...styles.loadingContainer}>
+              <h1 {...styles.postTitle}>Loading..</h1>
+            </div>
+          )
+        }
         <div {...styles.postList}>
           {
             postsState.posts.map((p, i) => (
@@ -216,6 +235,10 @@ const styles = {
       overflowY: 'none'
     }
   }),
+  loadingContainer: css({
+    paddingLeft: 50,
+    paddingTop: 20
+  }),
   postList: css({
     width: '900px',
     margin: '0 auto',
@@ -290,10 +313,11 @@ const styles = {
     backgroundColor: '#ededed'
   }),
   footer: css({
-    padding: '10px 20px'
+    padding: '0px 20px'
   }),
   footerText: css({
-    fontSize: 16
+    fontSize: 16,
+    marginBottom: 0
   }),
   footerLink: css({
     textDecoration: 'none',

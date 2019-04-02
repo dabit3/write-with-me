@@ -64,4 +64,15 @@ img {
   img {
     max-width: 100%;
   }
+  h1 {
+    font-size: 40px;
+    margin-top: 12px;
+  }
+  h2 {
+    font-size: 30px;
+  }
+  h3 {
+    font-size: 24px;
+    margin: 5px 0px 10px;
+  }
 }
