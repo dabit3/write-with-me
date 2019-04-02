@@ -36,6 +36,7 @@ function reducer(state, action) {
       }
     case 'addPostFromSubscription':
       return {
+        ...state,
         posts: [
           action.post,
           ...state.posts
