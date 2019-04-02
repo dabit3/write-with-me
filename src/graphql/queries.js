@@ -1,8 +1,7 @@
 // eslint-disable
 // this is an auto generated file. This will be overwritten
-import gql from 'graphql-tag'
 
-export const getPost = gql`query GetPost($id: ID!) {
+export const getPost = `query GetPost($id: ID!) {
   getPost(id: $id) {
     id
     clientId

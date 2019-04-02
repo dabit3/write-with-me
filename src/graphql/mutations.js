@@ -1,6 +1,5 @@
 // eslint-disable
 // this is an auto generated file. This will be overwritten
-import gql from 'graphql-tag'
 
 export const createPost = `mutation CreatePost($input: CreatePostInput!) {
   createPost(input: $input) {
@@ -12,7 +11,7 @@ export const createPost = `mutation CreatePost($input: CreatePostInput!) {
   }
 }
 `;
-export const updatePost = gql`mutation UpdatePost($input: UpdatePostInput!) {
+export const updatePost = `mutation UpdatePost($input: UpdatePostInput!) {
   updatePost(input: $input) {
     id
     clientId
