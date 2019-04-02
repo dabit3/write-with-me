@@ -31,6 +31,7 @@ function reducer(state, action) {
   switch (action.type) {
     case 'fetchPostsSuccess':
       return {
+        ...state,
         posts: action.posts,
         loading: false
       }
