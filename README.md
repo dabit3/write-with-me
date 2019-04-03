@@ -24,7 +24,7 @@ We have a `Post` type that has a few properties. The most important property is 
 
 We also have a `clientId` to properly handle GraphQL subscriptions on the client.
 
-## Launching the App
+## Launching the app
 
 Deploy this fullstack app with a single click to the Amplify Console:
 
