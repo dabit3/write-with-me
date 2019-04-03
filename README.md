@@ -24,17 +24,14 @@ We have a `Post` type that has a few properties. The most important property is 
 
 We also have a `clientId` to properly handle GraphQL subscriptions on the client.
 
-## Launching the App
+## Launching the app
 
-### Amplify Console
+Deploy this fullstack app with a single click to the Amplify Console:
 
-1. Fork the repo into your own account.
+[![amplifybutton](https://oneclick.amplifyapp.com/button.svg)](https://console.aws.amazon.com/amplify/home#/deploy?repo=https://github.com/dabit3/write-with-me)
 
-2. In the [Amplify Console](https://console.aws.amazon.com/amplify/home), click __Get Started__ under __Deploy__.
 
-3. Choose your repo & branch.
-
-### AWS Amplify CLI
+### Run locally with the Amplify CLI
 
 1. Clone the repo
 
