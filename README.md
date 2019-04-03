@@ -31,7 +31,7 @@ Deploy this fullstack app with a single click to the Amplify Console:
 [![amplifybutton](https://oneclick.amplifyapp.com/button.svg)](https://console.aws.amazon.com/amplify/home#/deploy?repo=https://github.com/username/repository)
 
 
-### AWS Amplify CLI
+### Run locally with the Amplify CLI
 
 1. Clone the repo
 
