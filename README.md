@@ -26,13 +26,10 @@ We also have a `clientId` to properly handle GraphQL subscriptions on the client
 
 ## Launching the App
 
-### Amplify Console
+1. Deploy this fullstack app with a single click to the Amplify Console:
 
-1. Fork the repo into your own account.
+[![amplifybutton](https://oneclick.amplifyapp.com/button.svg)](https://console.aws.amazon.com/amplify/home#/deploy?repo=https://github.com/username/repository)
 
-2. In the [Amplify Console](https://console.aws.amazon.com/amplify/home), click __Get Started__ under __Deploy__.
-
-3. Choose your repo & branch.
 
 ### AWS Amplify CLI
 
