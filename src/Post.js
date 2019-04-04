@@ -154,17 +154,17 @@ const Post = ({ match: { params } }) => {
           { isEditing && (
             <input
               value={postState.title}
-              onChange={debounce(updatePostTitle, 200)}
+              onChange={e => debounce(() => updatePostTitle(e), 200)}
               {...styles.input}
               placeholder='Post Title'
             />
           )}
           {isEditing && (
-            <textarea 
-              {...styles.textarea} 
-              value={postState.markdown} 
-              onChange={debounce(updateMarkdown, 200)} 
-            /> 
+            <textarea
+              {...styles.textarea}
+              value={postState.markdown}
+              onChange={e => debounce(() => updateMarkdown(e), 200)}
+            />
           )}
         </div>
       </div>
