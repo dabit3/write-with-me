@@ -5,6 +5,7 @@ import { API, graphqlOperation } from 'aws-amplify'
 import { createPost, updatePost as UpdatePost } from './graphql/mutations'
 import { onUpdatePost } from './graphql/subscriptions'
 import uuid from 'uuid/v4'
+import debounce from 'debounce'
 import Container from './Container'
 
 const CLIENTID = uuid()
@@ -153,12 +154,18 @@ const Post = ({ match: { params } }) => {
           { isEditing && (
             <input
               value={postState.title}
-              onChange={updatePostTitle}
+              onChange={debounce(updatePostTitle, 200)}
               {...styles.input}
               placeholder='Post Title'
             />
           )}
-          { isEditing && <textarea {...styles.textarea} value={postState.markdown} onChange={updateMarkdown} /> }
+          {isEditing && (
+            <textarea 
+              {...styles.textarea} 
+              value={postState.markdown} 
+              onChange={debounce(updateMarkdown, 200)} 
+            /> 
+          )}
         </div>
       </div>
     </Container>
