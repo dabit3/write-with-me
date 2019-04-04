@@ -5,13 +5,13 @@
   "dependencies": {
     "aws-amplify": "^1.1.23",
     "aws-amplify-react": "^2.3.3",
+    "debounce": "^1.2.0",
     "glamor": "^2.20.40",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-markdown": "^4.0.6",
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
-    "use-debounce": "^1.1.1",
     "uuid": "^3.3.2"
   },
   "scripts": {

@@ -2,7 +2,7 @@ import React, { useState, useReducer, useEffect } from 'react'
 import { css } from 'glamor'
 import { Link } from 'react-router-dom'
 import { API, graphqlOperation } from 'aws-amplify'
-import useDebouncedCallback from 'use-debounce/lib/callback';
+import debounce from 'debounce';
 import { createPost, updatePost as UpdatePost } from './graphql/mutations'
 import { onUpdatePost } from './graphql/subscriptions'
 import uuid from 'uuid/v4'
@@ -58,7 +58,7 @@ async function createNewPost(post, dispatch) {
   }
 }
 
-const [debouncedUpdatePost] = useDebouncedCallback(
+const debouncedUpdatePost = debounce(
   async function updatePost(post) {
     try {
       await API.graphql(graphqlOperation(UpdatePost, { input: post }))
@@ -67,8 +67,7 @@ const [debouncedUpdatePost] = useDebouncedCallback(
       console.log('error:', err)
     }
   },
-  250,
-  [API, graphqlOperation, UpdatePost]
+  250
 )
 
 const Post = ({ match: { params } }) => {
