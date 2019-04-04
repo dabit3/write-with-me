@@ -5,10 +5,12 @@ import { API, graphqlOperation } from 'aws-amplify'
 import { createPost, updatePost as UpdatePost } from './graphql/mutations'
 import { onUpdatePost } from './graphql/subscriptions'
 import uuid from 'uuid/v4'
-import debounce from 'debounce'
+import useDebouncedCallback from 'use-debounce/lib/callback';
+
 import Container from './Container'
 
 const CLIENTID = uuid()
+const DEBOUNCE_PERIOD = 250
 
 const ReactMarkdown = require('react-markdown')
 const input = `# This is a header\n\nAnd this is a paragraph\n\n`
@@ -89,35 +91,43 @@ const Post = ({ match: { params } }) => {
     createNewPost(post, dispatch)
   }, [])
 
-  function updateMarkdown(e) {
-    dispatch({
-      type: 'updateMarkdown',
-      markdown: e.target.value,
-    })
-    const newPost = {
-      id: post.id,
-      markdown: e.target.value,
-      clientId: CLIENTID,
-      createdAt: post.createdAt,
-      title: postState.title
-    }
-    updatePost(newPost, dispatch)
-  }
+  const [debouncedUpdateMarkdown] = useDebouncedCallback(
+    function updateMarkdown(e) {
+      dispatch({
+        type: 'updateMarkdown',
+        markdown: e.target.value,
+      })
+      const newPost = {
+        id: post.id,
+        markdown: e.target.value,
+        clientId: CLIENTID,
+        createdAt: post.createdAt,
+        title: postState.title
+      }
+      updatePost(newPost, dispatch)
+    },
+    DEBOUNCE_PERIOD,
+    [dispatch, post, postState, CLIENTID, updatePost]
+  )
 
-  function updatePostTitle (e) {
-    dispatch({
-      type: 'updateTitle',
-      title: e.target.value
-    })
-    const newPost = {
-      id: post.id,
-      markdown: postState.markdown,
-      clientId: CLIENTID,
-      createdAt: post.createdAt,
-      title: e.target.value
-    }
-    updatePost(newPost, dispatch)
-  }
+  const [debouncedUpdatePostTitle] = useDebouncedCallback(
+    function updatePostTitle(e) {
+      dispatch({
+        type: 'updateTitle',
+        title: e.target.value
+      })
+      const newPost = {
+        id: post.id,
+        markdown: postState.markdown,
+        clientId: CLIENTID,
+        createdAt: post.createdAt,
+        title: e.target.value
+      }
+      updatePost(newPost, dispatch)
+    },
+    DEBOUNCE_PERIOD,
+    [dispatch, post, postState, CLIENTID, updatePost]
+  )
 
   useEffect(() => {
     const subscriber = API.graphql(graphqlOperation(onUpdatePost, {
@@ -154,7 +164,7 @@ const Post = ({ match: { params } }) => {
           { isEditing && (
             <input
               value={postState.title}
-              onChange={e => debounce(() => updatePostTitle(e), 200)}
+              onChange={debouncedUpdatePostTitle}
               {...styles.input}
               placeholder='Post Title'
             />
@@ -163,7 +173,7 @@ const Post = ({ match: { params } }) => {
             <textarea
               {...styles.textarea}
               value={postState.markdown}
-              onChange={e => debounce(() => updateMarkdown(e), 200)}
+              onChange={debouncedUpdateMarkdown}
             />
           )}
         </div>
