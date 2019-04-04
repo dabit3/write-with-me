@@ -1,5 +1,7 @@
 # ✍️ Write with me
 
+This repo goes along with the medium post "How to Build a Real-time Collaborative Markdown Editor with React Hooks, GraphQL & AWS AppSync". Click [here](https://medium.com/open-graphql/how-to-build-a-real-time-collaborative-markdown-editor-with-react-hooks-graphql-aws-appsync-dc0c121683f4) to check it out.
+
 A real-time collaborative blog post editor built with GraphQL, React, React Markdown, & AWS AppSync.
 
 > Try it out at [www.writewithme.dev](https://www.writewithme.dev/#/)
