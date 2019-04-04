@@ -92,14 +92,14 @@ const Post = ({ match: { params } }) => {
   }, [])
 
   const [debouncedUpdateMarkdown] = useDebouncedCallback(
-    function updateMarkdown(e) {
+    function updateMarkdown(value) {
       dispatch({
         type: 'updateMarkdown',
-        markdown: e.target.value,
+        markdown: value,
       })
       const newPost = {
         id: post.id,
-        markdown: e.target.value,
+        markdown: value,
         clientId: CLIENTID,
         createdAt: post.createdAt,
         title: postState.title
@@ -111,17 +111,17 @@ const Post = ({ match: { params } }) => {
   )
 
   const [debouncedUpdatePostTitle] = useDebouncedCallback(
-    function updatePostTitle(e) {
+    function updatePostTitle(value) {
       dispatch({
         type: 'updateTitle',
-        title: e.target.value
+        title: value
       })
       const newPost = {
         id: post.id,
         markdown: postState.markdown,
         clientId: CLIENTID,
         createdAt: post.createdAt,
-        title: e.target.value
+        title: value
       }
       updatePost(newPost, dispatch)
     },
@@ -164,7 +164,7 @@ const Post = ({ match: { params } }) => {
           { isEditing && (
             <input
               value={postState.title}
-              onChange={debouncedUpdatePostTitle}
+              onChange={event => debouncedUpdatePostTitle(event.target.value)}
               {...styles.input}
               placeholder='Post Title'
             />
@@ -173,7 +173,7 @@ const Post = ({ match: { params } }) => {
             <textarea
               {...styles.textarea}
               value={postState.markdown}
-              onChange={debouncedUpdateMarkdown}
+              onChange={event => debouncedUpdateMarkdown(event.target.value)}
             />
           )}
         </div>
