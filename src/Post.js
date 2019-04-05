@@ -2,6 +2,7 @@ import React, { useState, useReducer, useEffect } from 'react'
 import { css } from 'glamor'
 import { Link } from 'react-router-dom'
 import { API, graphqlOperation } from 'aws-amplify'
+import debounce from 'debounce';
 import { createPost, updatePost as UpdatePost } from './graphql/mutations'
 import { onUpdatePost } from './graphql/subscriptions'
 import uuid from 'uuid/v4'
@@ -26,8 +27,8 @@ function reducer(state, action) {
         title: action.title,
         clientId: CLIENTID
       };
-      case 'updatePost':
-    return action.post
+    case 'updatePost':
+      return action.post
     default:
       throw new Error();
   }
@@ -43,7 +44,7 @@ async function createNewPost(post, dispatch) {
         clientId: CLIENTID
       }
     })
-  } catch(err) {
+  } catch (err) {
     if (err.errors[0].errorType === "DynamoDB:ConditionalCheckFailedException") {
       const existingPost = err.errors[0].data
       dispatch({
@@ -53,18 +54,21 @@ async function createNewPost(post, dispatch) {
           clientId: CLIENTID
         }
       })
-    }    
+    }
   }
 }
 
-async function updatePost(post) {
-  try {
-    await API.graphql(graphqlOperation(UpdatePost, { input: post }))
-    console.log('post has been updated!')
-  } catch (err) {
-    console.log('error:' , err)
-  }
-}
+const debouncedUpdatePost = debounce(
+  async function updatePost(post) {
+    try {
+      await API.graphql(graphqlOperation(UpdatePost, { input: post }))
+      console.log('post has been updated!')
+    } catch (err) {
+      console.log('error:', err)
+    }
+  },
+  250
+)
 
 const Post = ({ match: { params } }) => {
   const post = {
@@ -75,7 +79,7 @@ const Post = ({ match: { params } }) => {
   }
   const [postState, dispatch] = useReducer(reducer, post)
   const [isEditing, updateIsEditing] = useState(false)
-  
+
   function toggleMarkdown() {
     updateIsEditing(!isEditing)
   }
@@ -100,10 +104,10 @@ const Post = ({ match: { params } }) => {
       createdAt: post.createdAt,
       title: postState.title
     }
-    updatePost(newPost, dispatch)
+    debouncedUpdatePost(newPost, dispatch)
   }
 
-  function updatePostTitle (e) {
+  function updatePostTitle(e) {
     dispatch({
       type: 'updateTitle',
       title: e.target.value
@@ -115,7 +119,7 @@ const Post = ({ match: { params } }) => {
       createdAt: post.createdAt,
       title: e.target.value
     }
-    updatePost(newPost, dispatch)
+    debouncedUpdatePost(newPost, dispatch)
   }
 
   useEffect(() => {
@@ -148,9 +152,9 @@ const Post = ({ match: { params } }) => {
               {isEditing ? 'Done' : 'Edit'}
             </p>
           </div>
-          { !isEditing && <h1 {...styles.postTitle}>{postState.title}</h1>}
-          { !isEditing && <ReactMarkdown source={postState.markdown} /> }
-          { isEditing && (
+          {!isEditing && <h1 {...styles.postTitle}>{postState.title}</h1>}
+          {!isEditing && <ReactMarkdown source={postState.markdown} />}
+          {isEditing && (
             <input
               value={postState.title}
               onChange={updatePostTitle}
@@ -158,7 +162,7 @@ const Post = ({ match: { params } }) => {
               placeholder='Post Title'
             />
           )}
-          { isEditing && <textarea {...styles.textarea} value={postState.markdown} onChange={updateMarkdown} /> }
+          {isEditing && <textarea {...styles.textarea} value={postState.markdown} onChange={updateMarkdown} />}
         </div>
       </div>
     </Container>
