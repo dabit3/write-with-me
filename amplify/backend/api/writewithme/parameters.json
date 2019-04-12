@@ -1,5 +1,5 @@
 {
     "AppSyncApiName": "writewithme",
     "DynamoDBBillingMode": "PAY_PER_REQUEST",
-    "APIKeyExpirationEpoch": -1
+    "APIKeyExpirationEpoch": 1584032770
 }
