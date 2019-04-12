@@ -26,8 +26,8 @@ function reducer(state, action) {
         title: action.title,
         clientId: CLIENTID
       };
-      case 'updatePost':
-    return action.post
+    case 'updatePost':
+      return action.post
     default:
       throw new Error();
   }
