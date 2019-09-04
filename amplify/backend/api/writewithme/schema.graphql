@@ -5,3 +5,8 @@ type Post @model {
   title: String!
   createdAt: String
 }
+
+type Subscription {
+  onUpdatePostWithId(id: ID!): Post
+    @aws_subscribe(mutations: ["updatePost"])
+}

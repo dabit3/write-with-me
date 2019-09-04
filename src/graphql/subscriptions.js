@@ -11,6 +11,19 @@ export const onCreatePost = `subscription OnCreatePost {
   }
 }
 `;
+
+
+export const onUpdatePostWithId = `subscription onUpdatePostWithId($id: ID!) {
+  onUpdatePostWithId(id: $id) {
+    id
+    clientId
+    markdown
+    title
+    createdAt
+  }
+}
+`;
+
 export const onUpdatePost = `subscription OnUpdatePost {
   onUpdatePost {
     id

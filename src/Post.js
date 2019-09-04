@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { API, graphqlOperation } from 'aws-amplify'
 import debounce from 'debounce';
 import { createPost, updatePost as UpdatePost } from './graphql/mutations'
-import { onUpdatePost } from './graphql/subscriptions'
+import { onUpdatePostWithId } from './graphql/subscriptions'
 import uuid from 'uuid/v4'
 import Container from './Container'
 
@@ -123,12 +123,12 @@ const Post = ({ match: { params } }) => {
   }
 
   useEffect(() => {
-    const subscriber = API.graphql(graphqlOperation(onUpdatePost, {
+    const subscriber = API.graphql(graphqlOperation(onUpdatePostWithId, {
       id: post.id
     })).subscribe({
       next: data => {
-        if (CLIENTID === data.value.data.onUpdatePost.clientId) return
-        const postFromSub = data.value.data.onUpdatePost
+        if (CLIENTID === data.value.data.onUpdatePostWithId.clientId) return
+        const postFromSub = data.value.data.onUpdatePostWithId
         dispatch({
           type: 'updatePost',
           post: postFromSub
