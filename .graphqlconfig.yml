@@ -11,6 +11,6 @@ projects:
         generatedFileName: ''
         docsFilePath: src/graphql
         graphQLApiId: bh2ztsfsjzdpno6ndpbud3bh7e
-      endpoints:
-        prod: >-
-          https://onjvuqjth5albooqap57zce2oe.appsync-api.eu-central-1.amazonaws.com/graphql
+extensions:
+  amplify:
+    version: 3
